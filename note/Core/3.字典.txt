@@ -1,0 +1,38 @@
+字典(dictionary):
+	python中唯一内建的映射类型
+	dict()函数：使用键-值对的序列建立字典
+		>>> items = [('name', 'Gumby'), ('age',42)]
+		>>> d = dict(items)
+		>>> d
+		{'age':42, 'name':'Gumby'}
+	1.用来格式化字符串：
+		>>> print('%(cecil)s' %phonebook)	#从字典phonebook中查找key='cecil'的值 转化为字符串类型输出
+	2.基本操作：
+		len(dict):返回dict中键-值对的数量
+		d[k]:返回关联到键k上的值
+		d[k] = v
+		del d[k]
+		k in d:成员资格，查找的是键而不是值。(与列表不一样，v in l 则用来查找值，而不是索引)
+	3.字典方法：
+		1.clear
+		2.copy:浅复制shallow copy：当在复本中 替换 值的时候原始字典不受影响，增删了某个值，原始字典也会变。因为同样的值也存储在原字典中
+				深复制deep copy：复制其包含的所有值
+		3.fromkeys:使用给定的键建立新的字典，对应None
+			>>> fromkeys['name','age']
+			{'age':None, 'name':None}
+			也可以给定默认值
+			>>> dict.fromkeys(['name', 'age'], 'unknown')
+		4.get(key)安全的获取值，当访问的键不存在时，得到None
+			甚至可以自定义“默认值”替换None
+		5.items：将字典中所有的项以(键-值)对的列表形式返回	[('name','Tome'),('age',24)]
+		  iteritems:返回一个迭代器对象，而不是列表
+		6.keys：将字典中的键以列表形式返回
+		  iterkeys：返回针对键的迭代器
+		7.values：
+		   itervalues：
+		8.pop：返回对应key的值，并将键-值对从字典中移除
+		  popitem：弹出字典中随机的项		(对比列表：pop弹出列表最后的项)
+		9.update：利用一个字典项更新另外一个字典
+				提供的字典中的项被添加到旧字典，key相等则会覆盖
+		10.setdefault：键不存在时，返回默认值
+					键存在时，返回与其对应的值

@@ -1,0 +1,68 @@
+Python本身内置了很多非常有用的模块，只要安装完毕，就可以立即使用.
+
+	标准文档模板
+	#!/usr/bin/env python3			标准注释：1.可以让这个hello.py文件直接在Unix/Linux/Mac上运行
+	# -*- coding: utf-8 -*-					  2.表示.py文件本身使用标准的UTF-8编码
+
+	'a test module'					一个字符串，表示模块的文档注释，任何模块代码的第一个字符串都被视为模块的文档注释
+
+	__author__='Vincent'			__author__变量把作者写进去
+
+	
+作用域：
+	在一个模块中会定义很多函数和变量，有些函数和变量希望给别人使用，但有的函数和变量仅仅希望在模块内部使用。
+	在Python中，通过_前缀来实现。。。
+
+	正常的函数和变量名是公开的(public)，可以被直接引用。
+	类似__xxx__这样的变量是特殊变量，可以被直接应用，但是有特殊用途，例如上面的__name__和__author__.
+	模块的文档注释也可以用特殊变量__doc__访问。
+
+	类似_xxx和__xxx这样的函数或变量就是非公开的(private),“不应该”被直接引用，例如_abc,__abc等。
+	不应该：而不是不能。因为python并没有一种方法可以完全限制private函数或变量，但是，从编程习惯来说不应该被引用。
+
+	不应该被引用，那定义他们有什么意义呢？
+	def _private_1(name):
+		return 'Hello, %s' % name
+
+	def _private_2(name):
+		return 'Hi, %s' % name
+
+	def greeting(name):
+		if len(name) > 3:
+			return _private_1(name)
+		else:
+			return _private_2(name)
+通过隐藏实现代码的封装和抽象。
+
+	外部不需要引用的函数全部定义为private，只有外部需要引用的函数才定义为public。
+
+安装第三方模块：
+	通过包管理工具pip完成的。
+	
+	在Mac或Linux环境，pip已经被内置。//Mac或Linux上可能并存Python 3.x和Python2.x,此时对应的pip命令是pip3
+	如果是Windows,确保安装时勾选了pip和Add python.exe to Path。//在命令提示符下尝试运行pip，如果Windows提示未找到命令，需要重新添加。
+
+	pip install Pillow     # 安装处理图片模块Pillow
+	其他常用的第三方库还有MySql的驱动：mysql-connector-python,
+	用于科学计算的NumPy库：numpy
+	用于生成文本的模版工具：Jinja2
+
+模块搜索路径：
+	当我们试图加载一个模块时，Python会在指定的路径下搜索对应的.py文件，找不到会报错：
+	ImportError: No module named mymodule
+	默认情况下，Python解释器会搜索当前目录，所有已安装的内置模块和第三方模块，搜索路径存在sys模块的path变量中：
+	需要添加自己的搜索目录：
+		1.直接修改sys：
+		这种方法在运行时修改，运行结束后失效
+		import sys
+		sys.path.append('User/Vincent/my_py_scripts')
+
+		2.设置环境变量PYTHONPATH，该环境变量的内容会被自动添加到模块搜索路径中。
+		设置方式与设置Python环境变量一致。
+
+
+
+
+
+
+

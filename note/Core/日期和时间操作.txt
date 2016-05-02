@@ -1,0 +1,59 @@
+很多Python函数用一个元组（struct_time）封装的9组数字来处理时间：
+	序号	属性		值
+	0		tm_year		2008
+	1		tm_mon		1 到 12	
+	2		tm_mday		1 到 31
+	3		tm_hour		0 到 23
+	4		tm_min		0 到 59
+	5		tm_sec		0 到 61 (60或61 是闰秒)
+	6		tm_wday		0到6 (0是周一)
+	7		tm_yday		1 到 366(儒略历)
+	8		tm_isdst	-1, 0, 1, -1是决定是否为夏令时的旗帜
+1.获取当前时间:
+	>>>import time;
+
+	>>>localtime = time.localtime(time.time())    #time.time()返回当前时间的时间戳（1970纪元后经过的浮点秒数）。
+	>>>print ("Local current time :", localtime)		
+		Local current time : time.struct_time(tm_year=2016, tm_mon=2, tm_mday=20, tm_hour=19, tm_min=46, tm_sec=51, tm_wday=5, tm_yday=51, tm_isdst=0)
+
+	格式化时间：
+	>>>localtime = time.asctime(time.localtime(time.time()))     #最简单
+		Local current time : Sat Feb 20 20:37:26 2016
+
+	>>>localtime = time.localtime(time.time())
+	>>>formattime = time.strftime("%Y/%m/%d %H:%M:%S", localtime)  #注意大写小写
+	>>>print ("Local current time :", formattime)
+		Local current time : 2016/02/20 20:38:50
+
+2.时间API:
+	time.time() #返回当前时间的时间戳（1970纪元后经过的浮点秒数）。
+	time.localtime([secs]) #接收时间辍（1970纪元后经过的浮点秒数）并返回当地时间下的时间元组t（t.tm_isdst可取0或1，取决于当地当时是不是夏令时）。
+	time.sleep(secs) 推迟调用线程的运行，secs指秒数。
+
+	time.strptime(string[, format])     #不加参数时，默认输出的就是当前时间
+
+3.日历模块
+	>>>import calendar
+	>>>cal = calendar.month(2016, 4)
+	>>>print(cal)  #打印某月的日历
+
+4.日历API
+	calendar.month(year,month,w=2,l=1) #返回一个多行字符串格式的year年month月日历，两行标题，一周一行。
+	# 每日宽度间隔为w字符。每行的长度为7* w+6。l是每星期的行数。
+
+5.时间转换
+	函数time.time()用ticks计时单位返回从12:00am, January 1, 1970(epoch) 开始的记录的当前操作系统时间,
+	简单的时间转换 使用 datetime 模块
+	>>>from datetime import timedelta
+	>>>a = timedelta(days=2, hours=6)
+	>>>b = timedelta(hours=4.5)
+	>>>c = a + b
+	>>>print(c.seconds)
+	如果你想表示指定的日期和时间，先创建一个 datetime 实例然后使用标准的数学运算来操作它们。
+	>>>from datetime import datetime
+	>>>a = datetime(2012, 9, 23)
+	>>>print(a + timedelta(days=10))
+		2012-10-03 00:00:00
+
+	datetime 会自动处理闰年
+

@@ -1,0 +1,56 @@
+Python内置了SQLite3：
+	SQLite是一种嵌入式数据库，它的数据库就是一个文件。
+	SQLite本身是C写的，而且体积很小，经常被集成到各种应用程序中(iOS、Android的App中）
+
+1.首先需要连接到数据库，一个数据库连接称为Connection；
+2.连接到数据库后，需要打开游标，称之为Cursor，通过Cursor执行SQL语句，然后，获得执行结果。
+
+
+Python定义了一套操作数据库的API接口，任何数据库要连接到Python，只需要提供符合Python标准的数据库驱动即可。
+
+# 导入Sqlite驱动:
+	>>>import sqlite3
+	
+	>>>path = 'D:/Users/ss/Documents/python/sql/sqlite/test/'+'test.db'
+	>>>conn = sqlite3.connect(path) #如果文件不存在，会自动在当前目录创建
+
+#创建一个Cursor：
+	>>>cursor = conn.cursor()	# cursor.execute("CREATE TABLE user (id varchar(20) PRIMARY KEY, NAME VARCHAR(20))")
+
+	>>>cursor.execute("INSERT INTO user (id, name) VALUES ('2', 'Tom')")
+	>>>print(cursor.rowcount) #通过rowcount获得受影响的行数
+	>>>
+	>>>cursor.close()
+	>>>conn.commit()
+	>>>conn.close()
+查询记录：
+	>>>cursor.execute("SELECT * FROM user WHERE id=?",'1')
+	>>>
+	>>>values = cursor.fetchall()
+	>>>print(values)     #观察数据的格式[(),(),()]
+	>>>
+	>>>cursor.close()
+	>>>conn.close()
+
+总结：
+	使用Python的DB-API时，需要Connection和Cursor对象，打开后记得关闭，就可以放心地使用。
+	使用Cursor对象执行insert，update，delete语句DML时，执行结果由rowcount返回影响的行数，就可以拿到执行结果。
+	使用Cursor对象执行select语句DDL时，通过featchall()可以拿到结果集。结果集是一个list，每个元素都是一个tuple，对应一行记录。
+
+
+	如果SQL语句带有参数，那么需要把参数按照位置传递给execute()方法，有几个?占位符就必须对应几个参数，例如：
+	cursor.execute('select * from user where id=? AND name = ?', ('1','Tom'))
+	确保出错的情况下也关闭掉Connection对象和Cursor对象呢？请回忆
+	try:...except:...finally:...待补充……
+
+附：
+	import os, sqlite3
+	
+	db_file = os.path.join(os.path.dirname(__file__), 'test.db')
+	if os.path.isfile(db_file):
+		os.remove(db_file)
+	
+	# 初始数据:
+	conn = sqlite3.connect(db_file)
+
+

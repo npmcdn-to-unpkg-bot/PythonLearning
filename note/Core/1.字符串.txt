@@ -1,0 +1,43 @@
+字符串str：字符串是以单引号'或双引号"括起来的任意文本
+	字符串是不可变的，分片赋值等都是不合法的
+
+	1.格式化字符串:
+		1) %运算符就是用来格式化字符串的
+		%s表示用字符串替换，%d表示用整数替换，有几个%?占位符，后面就跟几个变量或者值，顺序要对应。如果只有一个%?，括号可以省略。
+
+		常见的占位符有：
+		%d 整数
+		%f 浮点数
+		%s 字符串
+		%x 十六进制整数
+
+		>>> print("%03d" %1)  #前补0 
+		001
+		>>> print("%.3f" %3.1415) #等价于%0.3f
+		3.142
+	  注：只有元组和字典可以格式化一个以上的值，列表或其他序列会解释为一个值。
+		2) 模板字符串：
+			S = Template('$x, glorious $x!')
+			S.subStitute(x = 'slurm')
+			S = Template("It's ${x} tastic!")
+			
+			字典提供 值/名称 对：
+				S = Template('A $thing must never $action!')
+				d = {'thing':'gentleman', 'action':'Show his socks'}
+				s.substitute(d)
+	  注: 在使用Template时，如果要使用美元符号则$$
+			safe_subtitute不会出错
+	
+	2.方法：
+		1)find：
+			string.find(str, beg=0, end=len(string))
+			检测 str 是否包含在 string 中，如果 beg 和 end 指定范围，则检查是否包含在指定范围内，如果是返回开始的索引值，否则返回-1
+		2)join:
+		3)splite：如果不提供任何分隔符，会把(空格，制表，换行符)作为分割
+			当你需要更加灵活的切割字符串的时候，最好使用 re.split() 方法：
+		4)lower:
+		5)replace:
+		6)strip：返回去除两侧(不含内部)空格的字符串
+		7)translate:替换字符串中的某些部分，只处理单个字符
+		8)capwords(s[,seq]):首字母大写
+

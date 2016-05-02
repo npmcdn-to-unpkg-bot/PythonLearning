@@ -1,0 +1,48 @@
+1.如果直接把属性暴露出去，没办法检查参数，不合逻辑。需要一个get，set方法
+	>>> class Student(object):
+
+			def get_score(self):
+				 return self._score
+
+			def set_score(self, value):
+				if not isinstance(value, int):
+					raise ValueError('score must be an integer!')
+				if value < 0 or value > 100:
+					raise ValueError('score must between 0 ~ 100!')
+				self._score = value
+
+2.上面的调用方法又略显复杂，没有直接用属性那么直接简单。
+	有没有既能检查参数，又可以用类似属性这样简单的方式访问类的变量呢？
+3.还记得装饰器(decorator)可以给函数加上动态功能么。
+	Python内置的@property装饰器就是负责把一个方法变成属性来调用
+	class Student(object):
+
+		@property
+		def score(self):
+			return self._score
+
+		@score.setter
+		def score(self, value):
+			if not isinstance(value, int):
+				raise ValueError('score must be an integer!')
+			if value < 0 or value > 100:
+				raise ValueError('score must between 0 ~ 100!')
+			self._score = value
+
+	把一个getter方法变成属性，只需要加上@property，此时，@property本身又创造了另外一个装饰器@score.setter，负责把一个setter方法变成属性赋值，于是我们就有了一个可控属性。
+
+	我们在对实例属性操作的时候，就知道该属性很可能不是直接暴露的，而是通过getter和setter方法来实现的。
+	定义只读属性:只定义getter方法啊，不定义setter方法
+		>>>Class Student(object):
+			   
+			   @property
+			   def birth(self):
+					  return self._birth
+
+			   @birth.setter
+			   def birth(self, value):
+					  self._birth = value 
+
+				@property
+				def age(self):
+					   return Time.now()-self._birth

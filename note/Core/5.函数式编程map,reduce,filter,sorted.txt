@@ -1,0 +1,112 @@
+	函数是Python内建支持的一种封装，我们通过把大段代码拆成函数，通过一层层的函数调用，可以把复杂任务分解为简单任务，这种分解称之为面向过程的程序设计。
+	函数就是面向过程的程序设计的基本单元。
+	函数式编程——funcational Programming,虽然可以归结到面向过程的程序设计，但更接近数学思想。
+
+	函数式编程是一种抽象程度很高的一种编程范式，
+	纯粹的函数式编程语言编写的函数没有变量：任意一个函数，只要输入是确定的，输出就是确定的。这种纯函数没有副作用。
+	而允许使用变量的程序设计语言，由于函数内部的变量状态不确定，同样的输入，可能有不同的输出，因此，是由副作用的。
+
+	函数式编程的一个特点是:允许把函数本身作为参数传入另一个函数，还允许返回一个函数。
+
+Python对函数式编程提供部分支持。由于Python允许使用变量，因此Python不是函数式编程语言。
+
+1.高阶函数（Higher-order function）：
+	1）变量可以指向函数
+		>>> f = abs
+		>>> f(-10)
+		10
+	2) 函数名也是变量:
+		函数名其实是指向函数的变量
+			>>> abs = 10
+			>>> abs(-10)
+			Traceback (most recent call last):
+			  File "<stdin>", line 1, in <module>
+			TypeError: 'int' object is not callable
+		当然实际代码绝对不能这么写，这里是为了说明函数名也是变量。要恢复abs函数，请重启Python交互环境。
+		由于abs函数实际上是定义在__builtin__模块中的，所以要让修改abs变量的指向在其它模块也生效，要用__builtin__.abs = 10。
+	3）传入函数：
+		一个函数可以接收另外一个函数作为参数。
+		>>>def f(x):
+			 return x*x
+		>>>def add(x,y,f):
+			 return f(x) +f(y)
+		>>>print(add(6,8,f))
+
+1.Python内建函数map()和reduce()函数：
+	1)	map()函数接收两个参数，一个是函数，一个是Iterable(可迭代对象)
+
+		map将传入的函数依次作用到序列的每个元素，并把结果作为新的Iterator返回。
+		>>> def f(x):...     return x * x
+		...
+		>>> r = map(f, [1, 2, 3, 4, 5, 6, 7, 8, 9])
+		>>> list(r)
+		[1, 4, 9, 16, 25, 36, 49, 64, 81]
+			map()传入的第一个参数是f，即函数对象本身。由于结果r是一个Iterator，Iterator是惰性序列，因此通过list()函数让它把整个序列都计算出来并返回一个list
+			map()作为高阶函数，事实上它把运算规则抽象了，因此，我们不但可以计算简单的f(x)=x2，还可以计算任意复杂的函数。
+
+    2)	reduce把一个函数作用在一个序列[x1, x2, x3, ...]上，这个函数必须接收两个参数，reduce把结果继续和序列的下一个元素做累积计算，效果相当于：
+		reduce(f, [x1, x2, x3, x4]) = f(f(f(x1, x2), x3), x4)
+		当然求和运算可以直接用Python内建函数sum()，没必要动用reduce。
+
+		# 把序列[1, 3, 5, 7, 9]变换成整数13579
+		>> from functools import reduce
+		>>> def fn(x, y):
+		...    return x * 10 + y
+		...
+		>>> reduce(fn, [1, 3, 5, 7, 9])
+		13579
+		把str转换为int的函数：
+		>>> from functools import reduce
+		>>> def fn(x, y):
+		...     return x * 10 + y
+		...
+		>>> def char2num(s):
+		...     return {'0': 0, '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9}[s]
+		...
+		>>> reduce(fn, map(char2num, '13579'))
+		... 13579
+	# 还可以用lambda函数进一步简化成：
+	>>>from functools import reduce
+
+	>>>def char2num(s):
+		return {'0': 0, '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9}[s]
+
+	>>>def str2int(s):
+		return reduce(lambda x, y: x * 10 + y, map(char2num, s))
+					 #将一个函数写在内部作为lambda表达式
+
+     3)	filter:Python内建的filter()函数用于过滤序列
+		filter()和map()一样，接收一个函数和一个序列。
+		filter()把传入的函数依次作用于每个元素，然后根据返回值是True还是False决定保留还是丢弃该元素。
+
+		def is_odd(n):
+			return n % 2 == 1
+		list(filter(is_odd, [1,2,4,6,7,8]))
+		#结果：[1,7]
+
+		#删掉一个序列中的空字符串：
+		def not_empty(s):
+			return s and s.strip()
+
+		list(filter(not_empty, ['A', '', 'B', None, 'C', '  ']))
+		#结果：['A','B','C']
+		注意 filter()函数返回的是一个Iterator(惰性序列)，所以需要用list()函数获取所有结果并返回list。
+     4)sorted:排序算法
+		无论使用冒泡排序还是快速排序，排序的核心是比较两个元素的大小。
+		如果是数字，可以直接比较，如果是字符串或者两个dict，比较的过程必须通过函数抽象出来。
+		通常规定：对于两个元素x和y，如果x<y,则返回-1，x=y返回0，x>y返回1：这样排序算法就不用关心具体的比较过程，直接根据结果直接排序
+
+		python内置的sorted()函数可以对list进行排序，sorted()函数是一个高阶函数，接收一个key函数来实现自定义的排序，例如按绝对值大小排序：
+		>>> sorted([36, 5, -12, 9, -21], key=abs)     # key指定的函数将作用于list的每一个元素上，并根据函数返回的结果进行排序
+			[5, 9, -12, -21, 36]
+		默认情况下，对字符串排序，是按照ASCII的大小比较的，由于'Z' < 'a'，结果，大写字母Z会排在小写字母a的前面。
+		>>> sorted(['bob', 'about', 'Zoo', 'Credit'], key=str.lower)
+		['about', 'bob', 'Credit', 'Zoo']
+		要进行反向排序，不必改动key函数，可以传入第三个参数reverse=True：
+		>>> sorted(['bob', 'about', 'Zoo', 'Credit'], key=str.lower, reverse=True)
+		['Zoo', 'Credit', 'bob', 'about']
+
+
+
+
+

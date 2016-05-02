@@ -1,0 +1,52 @@
+
+1.对于简单的事，仅发送一个简单的HTTP GET请求:
+
+	>>>from urllib import request, parse
+	>>>url = 'Http://httpbin.org/get'  # Base URL being accessed
+	>>>parms = {   # Dictionary of query parameters (if any)
+			'name1' : 'value1',
+			'name2' : 'value2'
+		}
+	>>>querystring = parse.urlencode(parms)    # Encode the query string
+
+	# Make a GET request and read the response
+	>>>u = request.urlopen(url+'?'+querystring)
+	>>>resp = u.read()
+	
+2.如果需要使用POST方法在请求主体中发送查询函数，可以将参数编码后作为可选参数提供给urlopen()函数
+
+	>>>from urllib import request, parse
+	>>>url = 'http://httpbin.org/post'
+	>>>parms = {
+			'name1' : 'value1',
+			'name2' : 'value2'
+		}
+
+	>>>querystring = parse.urlencode(parms)
+
+	>>>u = request.urlopen(url, querystring.encode('ascii'))  #POST可以对参数进行设置传递编码
+	>>>resp = u.read
+3.如果需要自定义HTTP头，例如修改user-agent字段，可以创建一个包含字段值的字典，并创建一个Request实例传给urlopen()，
+
+	……
+	headers = {
+		'User-agent' : 'none/ofyourbusiness',
+		'Spam' : 'Eggs'
+	}
+	……
+	>>>req = request.Request(url, querystring.encode('ascii'), headers=headers)
+4.如果需要交互的服务比以上都要复杂，建议参考：(https://pypi.python.org/prpi/requests)
+     关于requests库，一个值得一提的特性就是它能以多种方式从请求中响应结果的内容。
+     resp.text带给我们是Unicode解码的响应文本
+     resp.content可以得到原始的二进制数据
+     resp.json就会得到JSON格式的响应内容
+
+讨论：
+	对于简单的HTTP客户端代码，用内置的urllib模块通常就足够，但是如果要做的不仅是简单的GET和POST请求，就可以使用第三方模块requests
+
+	如果你坚持使用标准的程序库而不考虑requests这样的第三方库，就不得不使用底层的http.client模块来实现自己的代码，
+	如果涉及代理、认证、cookies以及其他细节，使用urllib就显得特别啰嗦
+
+	在要同一个真正的站点进行交互前，先在 httpbin.org 这样的网站上做实验常常是可取的办法。尤其是当我们面对3次登录失败就会关闭账户这样的风险时尤为有用（不要尝试自己编写HTTP认证客户端来登录你的银行账户）
+	尽管本节没有涉及， request 库还对许多高级的HTTP客户端协议提供了支持，比如OAuth。
+	requests 模块的文档（http://docs.python-requests.org)

@@ -1,0 +1,50 @@
+threading 库，创建一个Thread对象，并将你要执行的对象以Target参数的形式传给Thread
+	>>>import time
+	>>>def func():
+	>>>     while(n>=0):
+	>>>          n -= 1
+	>>>          time.sleep(5)
+	>>>
+	>>>from threading import Thread
+	>>>t = Thread(target = func, args = (10,))
+	>>>t.start()
+Python中的线程会在一个单独的系统级线程中执行（比如说一个POSIX或者一个Windows线程），这些线程将由操作系统来全权管理。
+线程一旦启动，将独立执行直到目标函数返回。
+
+查看一个线程是否还在执行
+	if t.is_alive():  # 
+		print('Still running')
+	else：
+		print('Completed')
+
+t.join()  #将一个线程加入到当前线程，并等待它终止
+Python解释器会在所有的线程都终止后，才继续执行剩下的代码，对于需要长时间运行的线程或者常驻后台的任务，考虑使用后台线程。
+
+	>>>t = Thread(target=func, args=(10,), daemon=True)
+	>>>t.start()
+后台线程会在主线程终止时自动销毁。
+
+除了上述两个操作（启动，查看状态），并没有太多可以对线程做的事。无法在线程外部发送信号，销毁线程。。
+如果需要，这个线程必须通过在某个特定点轮询来退出。
+
+如果线程执行一些像I/O这样的阻塞操作，那么通过轮询来终止线程使得线程之间的协调十分棘手。
+如果一个线程一直阻塞在一个I/O操作上，它就永远无法返回，也就无法检查自己是否已被结束。
+
+要解决这个问题，就需要利用超时循环来小心操作线程。
+…………
+
+	由于全局锁（GIL）的原因，Python的线程被限制到同一时刻只允许一个线程执行这样一个执行模型。
+	所以，Python的线程更适用于处理I/O和其他需要并发执行的阻塞操作（比如等待I/O,等待从数据库获取数据等，而不是需要多处理器并行的计算密集型任务。
+
+
+也可以通过继承Thread类来实现线程，但是这样你的代码就依赖于threading库，你的这些线程只能在线程上下文中使用。
+
+你可以通过multiprocessing模块在一个单独的进程中执行你的代码。
+
+	import multiprocessing
+	c = CountdownTask(5)
+	p = multiprocessing.Process(target=c.run)
+	p.start()
+
+
+

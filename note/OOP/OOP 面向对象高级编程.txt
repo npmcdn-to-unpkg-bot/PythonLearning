@@ -1,0 +1,103 @@
+多重继承
+	通过多重继承，一个子类就可以同时获得多个父类的所有功能。
+	在设计类的继承关系时，通常，主线都是单一继承来的，如果需要“混入”额外的功能，通过多重继承就可以实现。这种设计称之为Mixln。
+	Mixln的目的就是给一个类增加多个功能，这样在设计类的时候，优先考虑通过多重继承来组合多个Mixln的功能，而不是设计多层次的复杂的继承关系。
+
+	Python自带的TCPServer和UpServer这两类网络服务，而要同时服务多个用户就必须使用多进程和多线程模型，这两种模型由ForkingMixIn 和 ThreadingMixIn提供。
+
+定制类
+	__str__重写类的打印方法
+		>>>class Student(object):
+			def  __init__(self, name):
+				  self.name = name
+			def  __str__(self):
+				   return 'Student object (name: %s)' % self.name
+		>>>print (Student('Michael'))
+		Student object (name: Michael)
+	如果不敲print，打印出来的实例还是不好看：	<__main__.Student object at 0x109afb320>
+	这是因为直接显示变量调用的不是__str__()   用户看到的字符串，而是__repr__() 程序开发者看到的字符串，也就是说，__repr__()是为了调试服务的。
+	解决办法是在定义一个__repr__()，或者 __repr__=__str__
+
+如果一个类想被用于for ... in循环，类似list和tuple那样，就必须实现一个__iter__()方法，该方法返回一个迭代对象，
+	Python的for循环就会不断调用该迭代对象的__next__()方法拿到循环的下一个值，
+	直到遇到StopIteration错误时退出循环。
+	把类作为一个生成器进行迭代？或者说包装了一个生成器作为类。
+
+	>>>class Fib(object):
+			def  __init__(self):
+				self.a, self.b = 0, 1  #初始化两个计数器a, b
+
+			def  __iter__(self):
+				return self #实例本身就是迭代对象，故返回自己
+
+			def  __next__(self):
+				self.a, self.b = self.b, self.a + self.b  #计算下一个值
+				if self.a > 10000: # 退出循环的条件
+                    raise StopIteration();
+                    return self.a #返回下一个值
+
+	__getitem__: 可以让Fib通过下标取出元素。需要实现__getitem__()方法:
+
+	>>>class Fib(object):
+			def  __getitem__(self, n):
+				a, b = 1, 1
+				for x in range(n):
+					a, b = b, a+b
+				return a
+	继续完善：list有个神奇的切片方法：
+
+		>>>list(range(100))[5:10]
+		[5, 6, 7, 8, 9]
+		对于Fib却报错，原因是__getitem__()传入的参数可能是一个int，也可能是一个切片对象slice，所以要作判断：
+
+		>>> class Fib(object):
+				def __getitem__(self, n):
+					if isinstance(n, int): # n 是索引
+						a, b = 1, 1
+						for x in range(n):
+							a, b = b, a + b
+						return a
+					if isinstance(n, slice): # n 是切片
+						start = n.start
+						stop = n.stop
+						if start is None:
+							start = 0
+						a, b = 1, 1
+						L = []
+						for x in range(stop):
+							if x >= start:
+								L.append(a)
+							a, b = b, a + b
+						return L
+
+		如果把对象看成dict，__getitem__()的参数也可能是一个可以作key的object，例如str
+		与之对应的是__setitem__()方法，把对象视作list或dict来对集合赋值。
+		还有一个__delitem__()方法，用于删除某个元素。
+		通过上面的方法，我们定义的类表现的和Python自带的list，tuple，dict没什么区别，这完全归功于动态语言的“鸭子类型”，不需要强制继承某个接口。
+
+	__getattr__：动态属性
+		当调用类不存在的属性时，就会报错。此时可以通过定义__getattr__方法，动态进行处理。
+
+		class Student(object):
+
+			def __init__(self):
+				self.name = 'Michael'
+
+			def __getattr__(self, attr):
+				if attr=='score':
+					return 99
+
+	当调用不存在的属性时，比如score，Python解释器会试图调用__getattr__(self, 'score')来尝试获得属性，这样，就有机会返回score的值。也可以返回函数。此时调用方式变为s.age()
+	注意：只有在没有找到属性的情况下，才调用__getattr__, 已有的属性，比如name，不会在__getattr__中查找。
+	此外，注意到任意调用如s.abc都会返回None，这是因为__getattr__默认返回None。
+	要让class只响应特定的几个属性，就要按照约定，抛出Attribute的错误：
+	class Student(object):
+
+		def __getattr__(self, attr):
+			if attr=='age':
+				return lambda: 25
+			raise AttributeError('\'Student\' object has no attribute \'%s\'' % attr)
+
+
+
+
