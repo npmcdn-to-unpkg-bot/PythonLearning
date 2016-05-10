@@ -3,3 +3,7 @@
 urllib是Python自带的一个获取网络数据的库，在Python 2中常用的获取网络数据的方法是urllib.urlopen()，而在Python 3中，该方法不再存在，其中urllib.urlopen()在Python 3中的等价表达是urllib.request.urlopen()。
 
 T
+
+6923450656181
+
+
